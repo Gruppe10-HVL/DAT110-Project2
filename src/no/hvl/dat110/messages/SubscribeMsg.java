@@ -2,9 +2,6 @@ package no.hvl.dat110.messages;
 
 public class SubscribeMsg extends Message {
 
-	public SubscribeMsg(String user, String topic) {
-	}
-
 	// message sent from client to subscribe on a topic 
 
 	// TODO:
