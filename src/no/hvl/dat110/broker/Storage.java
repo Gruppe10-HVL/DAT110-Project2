@@ -25,6 +25,8 @@ public class Storage {
 	public Storage() {
 		subscriptions = new ConcurrentHashMap<String, Set<String>>();
 		clients = new ConcurrentHashMap<String, ClientSession>();
+		connected = new ConcurrentHashMap<String, Boolean>();
+		messageBuffers = new ConcurrentHashMap<String, ArrayList<Message>>();
 	}
 
 	public Collection<ClientSession> getSessions() {
