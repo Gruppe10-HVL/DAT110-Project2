@@ -1,6 +1,5 @@
 package no.hvl.dat110.broker;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,22 +34,20 @@ public class Storage {
 	}
 
 	public Set<String> getTopics() {
-
 		return subscriptions.keySet();
-
 	}
 
 	/**
-	 * 
+	 * Returns a queue of all buffered messages for a user.
 	 * @param user
-	 * @return
+	 * @return A queue of messages.
 	 */
 	public Queue<Message> getBufferedMessages(String user) {
 		return bufferedMessages.get(user);
 	}
 
 	/**
-	 * 
+	 * Initializes a new buffer queue for a user.
 	 * @param user
 	 */
 	public void newMessageQueue(String user) {
@@ -58,8 +55,8 @@ public class Storage {
 	}
 
 	/**
-	 * 
-	 * @param msg
+	 * Adds a message to queue of all disconnected users.
+	 * @param msg 
 	 */
 	public void addMessageToQueue (PublishMsg msg) {
 		Set<String> users = subscriptions.get(msg.getTopic());
@@ -75,7 +72,7 @@ public class Storage {
 	}
 
 	/**
-	 * 
+	 * Clears the message queue of a user.
 	 */
 	public void clearMessageQueue(String user) {
 		bufferedMessages.remove(user);
@@ -85,62 +82,40 @@ public class Storage {
 	// session object can be used to send a message to the user
 
 	public ClientSession getSession(String user) {
-
 		ClientSession session = clients.get(user);
-
 		return session;
 	}
 
 	public Set<String> getSubscribers(String topic) {
-
 		return (subscriptions.get(topic));
-
 	}
 
 	public void addClientSession(String user, Connection connection) {
-
-		// TODO: add corresponding client session to the storage
-
 		clients.put(user, new ClientSession(user, connection));
-
 	}
 
 	public void removeClientSession(String user) {
-
 		clients.remove(user);
-
 	}
 
 	public void createTopic(String topic) {
-
-		// TODO: create topic in the storage
 		Set<String> set = new HashSet<>();
 		subscriptions.put(topic, set);
 	}
 
 	public void deleteTopic(String topic) {
-
-		// TODO: delete topic from the storage
-
 		subscriptions.remove(topic);
 	}
 
 	public void addSubscriber(String user, String topic) {
-
-		// TODO: add the user as subscriber to the topic
-
 		Set<String> set = getSubscribers(topic);
 		set.add(user);
 		subscriptions.put(topic, set);
 	}
 
 	public void removeSubscriber(String user, String topic) {
-
-		// TODO: remove the user as subscriber to the topic
-
 		Set<String> set = getSubscribers(topic);
 		set.remove(user);
 		subscriptions.put(topic, set);
-
 	}
 }

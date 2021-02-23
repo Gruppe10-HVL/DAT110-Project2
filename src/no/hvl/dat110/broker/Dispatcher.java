@@ -1,6 +1,5 @@
 package no.hvl.dat110.broker;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.Set;
@@ -87,7 +86,6 @@ public class Dispatcher extends Stopable {
 
 	// called from Broker after having established the underlying connection
 	public void onConnect(ConnectMsg msg, Connection connection) {
-
 		String user = msg.getUser();
 
 		Logger.log("onConnect:" + msg.toString());
@@ -105,7 +103,6 @@ public class Dispatcher extends Stopable {
 
 	// called by dispatch upon receiving a disconnect message
 	public void onDisconnect(DisconnectMsg msg) {
-
 		String user = msg.getUser();
 
 		Logger.log("onDisconnect:" + msg.toString());
@@ -113,16 +110,11 @@ public class Dispatcher extends Stopable {
 		storage.newMessageQueue(user);
 		
 		storage.removeClientSession(user);
-
 	}
 
 	public void onCreateTopic(CreateTopicMsg msg) {
-
 		Logger.log("onCreateTopic:" + msg.toString());
 
-		// TODO: create the topic in the broker storage
-		// the topic is contained in the create topic message
-		
 		try {
 			storage.createTopic(msg.getTopic());			
 		} catch (NullPointerException e) {
@@ -133,12 +125,8 @@ public class Dispatcher extends Stopable {
 	}
 
 	public void onDeleteTopic(DeleteTopicMsg msg) {
-
 		Logger.log("onDeleteTopic:" + msg.toString());
 
-		// TODO: delete the topic from the broker storage
-		// the topic is contained in the delete topic message
-		
 		try {
 			storage.deleteTopic(msg.getTopic());			
 		} catch (NullPointerException e) {
@@ -149,12 +137,8 @@ public class Dispatcher extends Stopable {
 	}
 
 	public void onSubscribe(SubscribeMsg msg) {
-
 		Logger.log("onSubscribe:" + msg.toString());
 
-		// TODO: subscribe user to the topic
-		// user and topic is contained in the subscribe message
-		
 		try {
 			storage.addSubscriber(msg.getUser(), msg.getTopic());
 		} catch (NullPointerException e) {
@@ -165,11 +149,7 @@ public class Dispatcher extends Stopable {
 	}
 
 	public void onUnsubscribe(UnsubscribeMsg msg) {
-
 		Logger.log("onUnsubscribe:" + msg.toString());
-
-		// TODO: unsubscribe user to the topic
-		// user and topic is contained in the unsubscribe message
 		
 		try {
 			storage.removeSubscriber(msg.getUser(), msg.getTopic());
@@ -181,12 +161,8 @@ public class Dispatcher extends Stopable {
 	}
 
 	public void onPublish(PublishMsg msg) {
-
 		Logger.log("onPublish:" + msg.toString());
 
-		// TODO: publish the message to clients subscribed to the topic
-		// topic and message is contained in the subscribe message
-		// messages must be sent used the corresponding client session objects
 		Set<String> subscribers = storage.getSubscribers(msg.getTopic());
 		
 		if (subscribers != null) {
