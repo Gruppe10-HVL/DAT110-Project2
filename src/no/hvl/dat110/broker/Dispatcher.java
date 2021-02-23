@@ -1,9 +1,8 @@
 package no.hvl.dat110.broker;
 
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 
-import no.hvl.dat110.common.TODO;
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.common.Stopable;
 import no.hvl.dat110.messages.*;
@@ -91,7 +90,19 @@ public class Dispatcher extends Stopable {
 
 		Logger.log("onConnect:" + msg.toString());
 
-		storage.addClientSession(user, connection);
+		if (storage.getSession(user) == null) {
+			storage.addClientSession(user, connection);
+		} else {
+			storage.connectUser(user, connection);
+
+			ArrayList<Message> messages = storage.getMessageBuffer(user);
+
+			for (Message message : messages) {
+				storage.getSession(user).send(message);
+			}
+
+			storage.emptyMessageBuffer(user);
+		}
 
 	}
 
@@ -113,10 +124,8 @@ public class Dispatcher extends Stopable {
 		// TODO: create the topic in the broker storage
 		// the topic is contained in the create topic message
 		
-		String topic = msg.getTopic();
-		
 		try {
-			storage.createTopic(topic);			
+			storage.createTopic(msg.getTopic());			
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			Logger.log("Error");
@@ -131,10 +140,8 @@ public class Dispatcher extends Stopable {
 		// TODO: delete the topic from the broker storage
 		// the topic is contained in the delete topic message
 		
-		String topic = msg.getTopic();
-		
 		try {
-			storage.deleteTopic(topic);			
+			storage.deleteTopic(msg.getTopic());			
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			Logger.log("Error");
@@ -149,11 +156,8 @@ public class Dispatcher extends Stopable {
 		// TODO: subscribe user to the topic
 		// user and topic is contained in the subscribe message
 		
-		String user = msg.getUser();
-		String topic = msg.getTopic();
-
 		try {
-			storage.addSubscriber(user, topic);
+			storage.addSubscriber(msg.getUser(), msg.getTopic());
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			Logger.log("Error");
@@ -168,11 +172,8 @@ public class Dispatcher extends Stopable {
 		// TODO: unsubscribe user to the topic
 		// user and topic is contained in the unsubscribe message
 		
-		String user = msg.getUser();
-		String topic = msg.getTopic();
-
 		try {
-			storage.removeSubscriber(user, topic);
+			storage.removeSubscriber(msg.getUser(), msg.getTopic());
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			Logger.log("Error");
@@ -189,8 +190,13 @@ public class Dispatcher extends Stopable {
 		// messages must be sent used the corresponding client session objects
 		try {
 			storage.getSubscribers(msg.getTopic()).stream()
-				.filter(user -> storage.getSession(user) != null)
-				.forEach(user -> storage.getSession(user).send(msg));
+				.forEach(user -> {
+					if (storage.isConnected(user)) {
+						storage.getSession(user).send(msg);
+					} else {
+						storage.addMessageToBuffer(user, msg);
+					}
+				});
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			Logger.log("Error");
