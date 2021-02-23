@@ -35,7 +35,7 @@ public class TestIoTSystem {
 		}
 
 		System.out.println("Starting display ...");
-		
+
 		displaythread.start();
 
 		// allow display to create topic
