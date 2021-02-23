@@ -34,6 +34,6 @@ public class PublishMsg extends Message {
 
 	@Override
 	public String toString() {
-		return super.toString() + message;
+		return "PublishMsg [topic=" + topic + ", message=" + message + "]" + super.toString();
 	}
 }
