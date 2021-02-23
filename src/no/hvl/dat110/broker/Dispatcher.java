@@ -2,6 +2,8 @@ package no.hvl.dat110.broker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Queue;
+import java.util.Set;
 
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.common.Stopable;
@@ -90,20 +92,15 @@ public class Dispatcher extends Stopable {
 
 		Logger.log("onConnect:" + msg.toString());
 
-		if (storage.getSession(user) == null) {
-			storage.addClientSession(user, connection);
-		} else {
-			storage.connectUser(user, connection);
+		storage.addClientSession(user, connection);
 
-			ArrayList<Message> messages = storage.getMessageBuffer(user);
-
-			for (Message message : messages) {
-				storage.getSession(user).send(message);
-			}
-
-			storage.emptyMessageBuffer(user);
+		Queue<Message> messages = storage.getBufferedMessages(user);
+		
+		if (messages != null) {
+			messages.stream().forEach(message -> storage.getSession(user).send(message));
 		}
 
+		storage.clearMessageQueue(user);
 	}
 
 	// called by dispatch upon receiving a disconnect message
@@ -113,6 +110,8 @@ public class Dispatcher extends Stopable {
 
 		Logger.log("onDisconnect:" + msg.toString());
 
+		storage.newMessageQueue(user);
+		
 		storage.removeClientSession(user);
 
 	}
@@ -188,19 +187,14 @@ public class Dispatcher extends Stopable {
 		// TODO: publish the message to clients subscribed to the topic
 		// topic and message is contained in the subscribe message
 		// messages must be sent used the corresponding client session objects
-		try {
-			storage.getSubscribers(msg.getTopic()).stream()
-				.forEach(user -> {
-					if (storage.isConnected(user)) {
-						storage.getSession(user).send(msg);
-					} else {
-						storage.addMessageToBuffer(user, msg);
-					}
-				});
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			Logger.log("Error");
+		Set<String> subscribers = storage.getSubscribers(msg.getTopic());
+		
+		if (subscribers != null) {
+			subscribers.stream().forEach(user -> {
+				if (storage.getSession(user) != null) {
+					storage.getSession(user).send(msg);
+				}
+			});
 		}
-
 	}
 }

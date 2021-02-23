@@ -3,10 +3,13 @@ package no.hvl.dat110.broker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import no.hvl.dat110.messages.Message;
+import no.hvl.dat110.messages.PublishMsg;
 import no.hvl.dat110.messagetransport.Connection;
 
 public class Storage {
@@ -19,14 +22,12 @@ public class Storage {
 	// maps from user to corresponding client session object
 
 	// Buffer implementation for discunnected users
-	protected ConcurrentHashMap<String, Boolean> connected;
-	protected ConcurrentHashMap<String, ArrayList<Message>> messageBuffers;
+	protected ConcurrentHashMap<String, Queue<Message>> bufferedMessages;
 
 	public Storage() {
 		subscriptions = new ConcurrentHashMap<String, Set<String>>();
 		clients = new ConcurrentHashMap<String, ClientSession>();
-		connected = new ConcurrentHashMap<String, Boolean>();
-		messageBuffers = new ConcurrentHashMap<String, ArrayList<Message>>();
+		bufferedMessages = new ConcurrentHashMap<String, Queue<Message>>();
 	}
 
 	public Collection<ClientSession> getSessions() {
@@ -37,6 +38,47 @@ public class Storage {
 
 		return subscriptions.keySet();
 
+	}
+
+	/**
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public Queue<Message> getBufferedMessages(String user) {
+		return bufferedMessages.get(user);
+	}
+
+	/**
+	 * 
+	 * @param user
+	 */
+	public void newMessageQueue(String user) {
+		bufferedMessages.put(user, new LinkedList<Message>());
+	}
+
+	/**
+	 * 
+	 * @param msg
+	 */
+	public void addMessageToQueue (PublishMsg msg) {
+		Set<String> users = subscriptions.get(msg.getTopic());
+		if (users != null) {
+			users.stream().forEach(user -> {
+				if (bufferedMessages.containsKey(user)) {
+					Queue<Message> messages = bufferedMessages.get(user);
+					messages.add(msg);
+					bufferedMessages.put(user, messages);
+				}
+			});
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void clearMessageQueue(String user) {
+		bufferedMessages.remove(user);
 	}
 
 	// get the session object for a given user
@@ -67,59 +109,6 @@ public class Storage {
 
 		clients.remove(user);
 
-	}
-
-	/**
-	 * 
-	 * @param user
-	 */
-	public void disconnectUser(String user) {
-		connected.put(user, false);
-		clients.get(user).disconnect();
-	}
-
-	/**
-	 * 
-	 * @param user
-	 * @param connection
-	 */
-	public void connectUser(String user, Connection connection) {
-		connected.put(user, true);
-		clients.put(user, new ClientSession(user, connection));
-	}
-
-	/**
-	 * 
-	 * @param user
-	 */
-	public boolean isConnected(String user) {
-		return connected.containsKey(user) ? connected.get(user) : false;
-	}
-
-	/**
-	 * 
-	 * @param user
-	 * @param msg
-	 */
-	public void addMessageToBuffer(String user, Message msg) {
-		if (!messageBuffers.containsKey(user)) {
-			messageBuffers.put(user, new ArrayList<Message>());
-		}
-		messageBuffers.get(user).add(msg);
-	}
-
-	/**
-	 * 
-	 * @param user
-	 * @return
-	 */
-	public ArrayList<Message> getMessageBuffer(String user) {
-		return messageBuffers.get(user);
-	}
-
-	public void emptyMessageBuffer(String user) {
-		if (messageBuffers.containsKey(user))
-			messageBuffers.get(user).clear();
 	}
 
 	public void createTopic(String topic) {
