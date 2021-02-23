@@ -91,7 +91,7 @@ public class Storage {
 	 * @param user
 	 */
 	public boolean isConnected(String user) {
-		return connected.get(user);
+		return connected.containsKey(user) ? connected.get(user) : false;
 	}
 
 	/**
