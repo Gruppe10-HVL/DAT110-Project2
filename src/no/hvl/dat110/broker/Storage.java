@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import no.hvl.dat110.messages.Message;
 import no.hvl.dat110.messagetransport.Connection;
 
 public class Storage {
