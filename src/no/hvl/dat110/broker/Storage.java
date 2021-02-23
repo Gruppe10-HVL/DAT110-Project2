@@ -102,6 +102,9 @@ public class Storage {
 	 * @param msg
 	 */
 	public void addMessageToBuffer(String user, Message msg) {
+		if (!messageBuffers.containsKey(user)) {
+			messageBuffers.put(user, new ArrayList<Message>());
+		}
 		messageBuffers.get(user).add(msg);
 	}
 
