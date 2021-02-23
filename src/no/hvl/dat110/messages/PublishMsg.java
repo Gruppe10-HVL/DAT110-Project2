@@ -12,6 +12,9 @@ public class PublishMsg extends Message {
 	// Constructor, get/set-methods, and toString method
 	// as described in the project text
 	
+	public PublishMsg(String user, String topic, String message) {
+	}
+
 	public String getMessage() {
 		
 		throw new UnsupportedOperationException(TODO.method());
