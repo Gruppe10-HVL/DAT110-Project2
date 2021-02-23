@@ -118,7 +118,8 @@ public class Storage {
 	}
 
 	public void emptyMessageBuffer(String user) {
-		messageBuffers.get(user).clear();
+		if (messageBuffers.containsKey(user))
+			messageBuffers.get(user).clear();
 	}
 
 	public void createTopic(String topic) {
