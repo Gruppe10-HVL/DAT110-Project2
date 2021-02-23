@@ -2,12 +2,11 @@ package no.hvl.dat110.broker;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import no.hvl.dat110.messages.Message;
-import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.messagetransport.Connection;
 
 public class Storage {
@@ -58,7 +57,7 @@ public class Storage {
 
 		// TODO: add corresponding client session to the storage
 
-		clients.put(user, getSession(user));
+		clients.put(user, new ClientSession(user, connection));
 
 	}
 
@@ -120,7 +119,7 @@ public class Storage {
 	public void createTopic(String topic) {
 
 		// TODO: create topic in the storage
-		Set<String> set = Collections.emptySet();
+		Set<String> set = new HashSet<>();
 		subscriptions.put(topic, set);
 	}
 

@@ -1,0 +1,9 @@
+{
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar",
+            "C:\\Program Files (x86)\\Java\\jUnit5\\junit.jar",
+            "C:\\Program Files (x86)\\Java\\jUnit5\\gson.jar"
+        ]
+    }
+}
