@@ -2,7 +2,6 @@
 *.class
 *.classpath
 .classpath
-/JavaFX/
 
 # Log file
 *.log
