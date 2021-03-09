@@ -13,19 +13,20 @@ public class DisplayDevice {
 		
 		System.out.println("Display starting ...");
 		
-		// TODO - START
 		
-		Client client = new Client("displaydevice", Common.BROKERHOST, Common.BROKERPORT);
+		Client client = new Client("display", Common.BROKERHOST, Common.BROKERPORT);
+		
 		client.connect();
 		
 		client.createTopic(Common.TEMPTOPIC);
-		
 		client.subscribe(Common.TEMPTOPIC);
 		
+		
 		for (int i = 0; i < COUNT; i++) {
-			PublishMsg msg = (PublishMsg) client.receive();
-			System.out.println("\nBroker Temperature: " + msg.getMessage());
-			
+
+			PublishMsg message = (PublishMsg) client.receive();
+			System.out.println("Temperatur er: " + message.getMessage());
+
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -34,14 +35,9 @@ public class DisplayDevice {
 		}
 		
 		client.unsubscribe(Common.TEMPTOPIC);
-		
 		client.disconnect();
 		
-		// TODO - END
-		
 		System.out.println("Display stopping ... ");
-		
-		throw new UnsupportedOperationException(TODO.method());
 		
 	}
 }

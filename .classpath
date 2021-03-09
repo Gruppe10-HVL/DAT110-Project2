@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="chapp/src"/>
+	<classpathentry kind="src" path="server/src"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx-swt.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="JavaFX/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="server/libs/gson-2.8.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
